@@ -1,10 +1,9 @@
-import Control.Monad
 import Data.List
 import System.Environment
 import System.IO
 
 type DNA = String
-data Prediction = Prediction { start :: Int, stop :: Int, score :: Int }
+data Prediction = Prediction { start :: !Int, stop :: !Int, score :: !Int }
 
 instance Show Prediction where
   show p = "(" ++ show (start p) ++ ", " ++ show (stop p) ++ ", " ++ show (score p) ++ ")"
@@ -41,7 +40,7 @@ parsePrediction p = listToPrediction $ map read (words p)
                     where listToPrediction (s : t : c : []) = Prediction { start = s, stop = t, score = c }
 
 optimalScore :: [Prediction] -> Int
-optimalScore = maximum . (map scoreSet) . (filter nonOverlapping) . (map sort) . subsequences
+optimalScore = maximum . map scoreSet . filter nonOverlapping . subsequences . sort
 
 scoreSet :: [Prediction] -> Int
 scoreSet = sum . map score
@@ -58,4 +57,4 @@ main = do
   let dna = fst contents
       predictions = snd contents
 
-  putStrLn . show $ optimalScore predictions
+  print $ optimalScore predictions
