@@ -2,8 +2,7 @@ import Data.List
 import System.Environment
 import System.IO
 
-type DNA = String
-data Prediction = Prediction { start :: !Int, stop :: !Int, score :: !Int }
+data Prediction = Prediction { start :: Int, stop :: Int, score :: Int }
 
 instance Show Prediction where
   show p = "(" ++ show (start p) ++ ", " ++ show (stop p) ++ ", " ++ show (score p) ++ ")"
@@ -17,17 +16,16 @@ instance Ord Prediction where
 getNLines :: Handle -> Int -> IO [String]
 getNLines h n = mapM (const $ hGetLine h) [1..n]
 
-readGattacaFormat :: Handle -> IO (DNA, [Prediction])
+readGattacaFormat :: Handle -> IO [Prediction]
 readGattacaFormat h = do
-  dna         <- readDNA h
-  predictions <- readPredictions h
-  return (dna, predictions)
+  skipDNA h
+  readPredictions h
 
-readDNA :: Handle -> IO DNA
-readDNA h = do
+skipDNA :: Handle -> IO ()
+skipDNA h = do
   n         <- hGetLine h
-  dna_lines <- getNLines h $ ceiling (read n / 80)
-  return $ concat dna_lines
+  getNLines h $ ceiling (read n / 80)
+  return ()
 
 readPredictions :: Handle -> IO [Prediction]
 readPredictions h = do
@@ -40,7 +38,8 @@ parsePrediction p = listToPrediction $ map read (words p)
                     where listToPrediction (s : t : c : []) = Prediction { start = s, stop = t, score = c }
 
 optimalScore :: [Prediction] -> Int
-optimalScore = maximum . map scoreSet . filter nonOverlapping . subsequences . sort
+--optimalScore = maximum . map scoreSet . filter nonOverlapping . subsequences . sort
+optimalScore = length . sort
 
 scoreSet :: [Prediction] -> Int
 scoreSet = sum . map score
@@ -53,8 +52,5 @@ nonOverlapping (a:b:ps) = (stop a < start b) && nonOverlapping (b:ps)
 main :: IO ()
 main = do
   input_filename:args <- getArgs
-  contents <- withFile input_filename ReadMode readGattacaFormat
-  let dna = fst contents
-      predictions = snd contents
-
+  predictions <- withFile input_filename ReadMode readGattacaFormat
   print $ optimalScore predictions

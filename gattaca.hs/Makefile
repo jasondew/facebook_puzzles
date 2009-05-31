@@ -1,5 +1,5 @@
 all: gattaca.hs
-	ghc --make -O2 -fvia-C -fwarn-missing-signatures -o gattaca gattaca.hs
+	ghc --make -O2 -fvia-C -optc-O2 -funbox-strict-fields -fwarn-missing-signatures -o gattaca gattaca.hs
 
 profiled: gattaca.hs
 	ghc --make -O2 -o gattaca gattaca.hs -prof -auto-all -caf-all -fforce-recomp
