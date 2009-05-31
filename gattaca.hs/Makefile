@@ -5,4 +5,4 @@ profiled: gattaca.hs
 	ghc --make -O2 -o gattaca gattaca.hs -prof -auto-all -caf-all -fforce-recomp
 
 clean:
-	@rm -f gattaca gattaca.o
+	@rm -f gattaca gattaca.o gattaca.hi gattaca.hp gattaca.prof

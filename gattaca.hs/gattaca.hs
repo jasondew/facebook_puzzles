@@ -34,20 +34,18 @@ readPredictions h = do
   return $ map parsePrediction prediction_lines
 
 parsePrediction :: String -> Prediction
-parsePrediction p = listToPrediction $ map read (words p)
-                    where listToPrediction (s : t : c : []) = Prediction { start = s, stop = t, score = c }
+parsePrediction p = case map read (words p) of (s : t : c : []) -> Prediction { start = s, stop = t, score = c }
 
 optimalScore :: [Prediction] -> Int
---optimalScore = maximum . map scoreSet . filter nonOverlapping . subsequences . sort
-optimalScore = length . sort
+optimalScore = maximum . map scoreSet . filter nonOverlapping . subsequences . sort
 
 scoreSet :: [Prediction] -> Int
 scoreSet = sum . map score
 
 nonOverlapping :: [Prediction] -> Bool
-nonOverlapping []       = True
+nonOverlapping []       = False
 nonOverlapping (_:[])   = True
-nonOverlapping (a:b:ps) = (stop a < start b) && nonOverlapping (b:ps)
+nonOverlapping (p:ps) = (stop p < start (head ps)) && nonOverlapping ps
 
 main :: IO ()
 main = do
