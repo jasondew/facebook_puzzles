@@ -1,4 +1,7 @@
 all: gattaca.hs
+	ghc --make -O2 -fwarn-missing-signatures -o gattaca gattaca.hs
+
+via-c: gattaca.hs
 	ghc --make -O2 -fvia-C -optc-O2 -funbox-strict-fields -fwarn-missing-signatures -o gattaca gattaca.hs
 
 profiled: gattaca.hs
