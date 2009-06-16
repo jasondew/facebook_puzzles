@@ -5,6 +5,7 @@ import qualified Data.Map as Map
 import Data.Maybe
 import System.Environment
 import System.IO
+import Text.Printf
 
 type Location = String
 data LocationProbability = LocationProbability { location :: Location, probability :: Double }
@@ -86,9 +87,15 @@ undirectedMap = f Map.empty
   where f m []                                         = m
         f m (Distance {from = s, to = t, time = n}:ds) = Map.insert (t, s) n $ Map.insert (s, t) n $ f m ds
 
+findable :: [LocationProbability] -> Bool
+findable lps = sum == 1.0
+  where sum = foldl (\acc lp -> acc + probability lp) 0.0 lps
+
 main :: IO ()
 main = do
   (input_filename:_)                  <- getArgs
   (location_probabilities, distances) <- withFile input_filename ReadMode readSophieFormat
 
-  print $ minExpectedTime location_probabilities distances
+  case findable location_probabilities of
+    True  -> printf "%.2f\n" $ minExpectedTime location_probabilities distances
+    False -> putStrLn "-1.00"
