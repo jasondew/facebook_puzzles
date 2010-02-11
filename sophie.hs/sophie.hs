@@ -70,7 +70,8 @@ floydWarshallIteration :: Location -> [(Location, Location)] -> Map (Location, L
 floydWarshallIteration l pairs m = foldl f m pairs
   where f m p = Map.insertWith min p (indirectPath p l m) m
 
-indirectPath :: (Location, Location) -> Location -> Map (Location, Location) Int -> Int
+-- FIXME: need to use a monoid here instead of arbitrary upper bound
+indirectPath :: (Location, Location) -> Location -> Map (Location, Location) Int -> Maybe Int
 indirectPath (i, j) l m = case Map.lookup (i, l) m of
                           Just d1 -> case Map.lookup (l, j) m of
                                       Just d2 -> d1 + d2
